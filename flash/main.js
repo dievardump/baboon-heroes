@@ -61,37 +61,37 @@ var Line = exports.Line = function (_Shape) {
 		key: 'draw',
 		value: function draw(time) {
 			if (time >= this.timer) {
-				var _ctx = this.ctx;
+				var ctx = this.ctx;
 				var t = time - this.timer;
 				if (t > this.duration) {
 					t = this.duration;
 				}
-				_ctx.beginPath();
-				_ctx.strokeStyle = this.color;
-				_ctx.lineWidth = this.lineWidth;
+				ctx.beginPath();
+				ctx.strokeStyle = this.color;
+				ctx.lineWidth = this.lineWidth;
 				var endX = easing(t, this.start[0], this.end[0] - this.start[0], this.duration),
 				    endY = easing(t, this.start[1], this.end[1] - this.start[1], this.duration);
 
-				_ctx.moveTo(this.start[0], this.start[1]);
-				_ctx.lineTo(endX, endY);
-				_ctx.stroke();
-				_ctx.closePath();
+				ctx.moveTo(this.start[0], this.start[1]);
+				ctx.lineTo(endX, endY);
+				ctx.stroke();
+				ctx.closePath();
 			}
 		}
 	}, {
 		key: 'drawBack',
 		value: function drawBack(time) {
 			if (time <= this.duration) {
-				var _ctx2 = this.ctx;
-				_ctx2.beginPath();
-				_ctx2.strokeStyle = this.color;
+				var ctx = this.ctx;
+				ctx.beginPath();
+				ctx.strokeStyle = this.color;
 
 				var startX = easing(time, this.start[0], this.end[0] - this.start[0], this.duration),
 				    startY = easing(time, this.start[1], this.end[1] - this.start[1], this.duration);
-				_ctx2.moveTo(startX, startY);
-				_ctx2.lineTo(this.end[0], this.end[1]);
-				_ctx2.stroke();
-				_ctx2.closePath();
+				ctx.moveTo(startX, startY);
+				ctx.lineTo(this.end[0], this.end[1]);
+				ctx.stroke();
+				ctx.closePath();
 			}
 		}
 	}]);
@@ -124,7 +124,7 @@ var Arc = exports.Arc = function (_Shape2) {
 		key: 'draw',
 		value: function draw(time) {
 			if (time >= this.timer) {
-				var _ctx3 = this.ctx;
+				var ctx = this.ctx;
 				var t = time - this.timer;
 				if (t > this.duration) {
 					t = this.duration;
@@ -133,50 +133,50 @@ var Arc = exports.Arc = function (_Shape2) {
 				var angle = easing(t, 0, this.length, this.duration),
 				    endPath = this.start + angle;
 
-				_ctx3.beginPath();
-				_ctx3.lineWidth = this.lineWidth;
+				ctx.beginPath();
+				ctx.lineWidth = this.lineWidth;
 
 				if (this.fill) {
 					var x = this.center[0] + this.radius * Math.cos(this.start),
 					    y = this.center[1] + this.radius * Math.sin(this.start);
-					_ctx3.moveTo(this.center[0], this.center[1]);
-					_ctx3.lineTo(x, y);
-					_ctx3.arc(this.center[0], this.center[1], this.radius, this.start, endPath, this.anticlockwise);
-					_ctx3.lineTo(this.center[0], this.center[1]);
-					_ctx3.fillStyle = this.color;
-					_ctx3.fill();
+					ctx.moveTo(this.center[0], this.center[1]);
+					ctx.lineTo(x, y);
+					ctx.arc(this.center[0], this.center[1], this.radius, this.start, endPath, this.anticlockwise);
+					ctx.lineTo(this.center[0], this.center[1]);
+					ctx.fillStyle = this.color;
+					ctx.fill();
 				} else {
-					_ctx3.arc(this.center[0], this.center[1], this.radius, this.start, endPath, this.anticlockwise);
-					_ctx3.strokeStyle = this.color;
-					_ctx3.stroke();
+					ctx.arc(this.center[0], this.center[1], this.radius, this.start, endPath, this.anticlockwise);
+					ctx.strokeStyle = this.color;
+					ctx.stroke();
 				}
-				_ctx3.closePath();
+				ctx.closePath();
 			}
 		}
 	}, {
 		key: 'drawBack',
 		value: function drawBack(time) {
 			if (time <= this.duration) {
-				var _ctx4 = this.ctx;
+				var ctx = this.ctx;
 				var angle = easing(time, 0, this.length, this.duration);
 				var startPath = this.start + angle;
 
-				_ctx4.beginPath();
+				ctx.beginPath();
 				if (this.fill) {
 					var x = this.center[0] + this.radius * Math.cos(startPath),
 					    y = this.center[1] + this.radius * Math.sin(startPath);
-					_ctx4.moveTo(this.center[0], this.center[1]);
-					_ctx4.lineTo(x, y);
-					_ctx4.arc(this.center[0], this.center[1], this.radius, startPath, this.start + this.length, this.anticlockwise);
-					_ctx4.lineTo(this.center[0], this.center[1]);
-					_ctx4.fillStyle = this.color;
-					_ctx4.fill();
+					ctx.moveTo(this.center[0], this.center[1]);
+					ctx.lineTo(x, y);
+					ctx.arc(this.center[0], this.center[1], this.radius, startPath, this.start + this.length, this.anticlockwise);
+					ctx.lineTo(this.center[0], this.center[1]);
+					ctx.fillStyle = this.color;
+					ctx.fill();
 				} else {
-					_ctx4.arc(this.center[0], this.center[1], this.radius, startPath, this.start + this.length, this.anticlockwise);
-					_ctx4.strokeStyle = this.color;
-					_ctx4.stroke();
+					ctx.arc(this.center[0], this.center[1], this.radius, startPath, this.start + this.length, this.anticlockwise);
+					ctx.strokeStyle = this.color;
+					ctx.stroke();
 				}
-				_ctx4.closePath();
+				ctx.closePath();
 			}
 		}
 	}]);
@@ -217,7 +217,7 @@ var CurveQuad = exports.CurveQuad = function (_Shape3) {
 		key: 'draw',
 		value: function draw(time) {
 			if (time >= this.timer) {
-				var _ctx5 = this.ctx;
+				var ctx = this.ctx;
 				var t = time - this.timer;
 				if (t > this.duration) {
 					t = this.duration;
@@ -227,20 +227,22 @@ var CurveQuad = exports.CurveQuad = function (_Shape3) {
 				    endPt = getQuadraticBezierXYatPercent(this.start, this.control, this.end, perc),
 				    controlPt = [this.start[0] + ~ ~((this.control[0] - this.start[0]) * perc), this.start[1] + ~ ~((this.control[1] - this.start[1]) * perc)];
 
-				_ctx5.beginPath();
-				_ctx5.lineWidth = this.lineWidth;
-				_ctx5.strokeStyle = this.color;
-				_ctx5.beginPath();
-				_ctx5.moveTo(this.start[0], this.start[1]);
-				_ctx5.quadraticCurveTo(controlPt[0], controlPt[1], endPt[0], endPt[1]);
-				_ctx5.stroke();
-				_ctx5.closePath();
+				ctx.beginPath();
+				ctx.lineWidth = this.lineWidth;
+				ctx.strokeStyle = this.color;
+				ctx.beginPath();
+				ctx.moveTo(this.start[0], this.start[1]);
+				ctx.quadraticCurveTo(controlPt[0], controlPt[1], endPt[0], endPt[1]);
+				ctx.stroke();
+				ctx.closePath();
 			}
 		}
 	}, {
 		key: 'drawBack',
 		value: function drawBack(time) {
 			if (time <= this.duration) {
+				var ctx = this.ctx;
+
 				var perc = time / this.duration,
 				    startPt = getQuadraticBezierXYatPercent(this.start, this.control, this.end, perc),
 				    controlPt = [this.end[0] + ~ ~((this.control[0] - this.end[0]) * perc), this.end[1] + ~ ~((this.control[1] - this.end[1]) * perc)];
@@ -303,8 +305,8 @@ var ClearRect = exports.ClearRect = function (_Clear) {
 		key: 'draw',
 		value: function draw(t) {
 			if (t >= this.time) {
-				var _ctx6 = this.ctx;
-				_ctx6.clearRect(this.x, this.y, this.width, this.height);
+				var ctx = this.ctx;
+				ctx.clearRect(this.x, this.y, this.width, this.height);
 			}
 		}
 	}]);
@@ -333,19 +335,19 @@ var ClearQuad = exports.ClearQuad = function (_Clear2) {
 		key: 'draw',
 		value: function draw(t) {
 			if (t >= this.time) {
-				var _ctx7 = this.ctx;
+				var ctx = this.ctx;
 
-				_ctx7.save();
-				_ctx7.globalCompositeOperation = 'destination-out';
+				ctx.save();
+				ctx.globalCompositeOperation = 'destination-out';
 				//ctx.strokeStyle = '#000';
 
-				_ctx7.beginPath();
-				_ctx7.lineWidth = this.height;
-				_ctx7.moveTo(this.x, this.y);
-				_ctx7.lineTo(this.x2, this.y2);
-				_ctx7.stroke();
+				ctx.beginPath();
+				ctx.lineWidth = this.height;
+				ctx.moveTo(this.x, this.y);
+				ctx.lineTo(this.x2, this.y2);
+				ctx.stroke();
 
-				_ctx7.restore();
+				ctx.restore();
 			}
 		}
 	}]);
@@ -371,18 +373,18 @@ var ClearArc = exports.ClearArc = function (_Clear3) {
 		key: 'draw',
 		value: function draw(t) {
 			if (t >= this.time) {
-				var _ctx8 = this.ctx,
+				var ctx = this.ctx,
 				    x = this.center[0],
 				    y = this.center[1],
 				    radius = this.radius;
 
-				_ctx8.save();
-				_ctx8.globalCompositeOperation = 'destination-out';
+				ctx.save();
+				ctx.globalCompositeOperation = 'destination-out';
 				//ctx.fillStyle = '#000';
-				_ctx8.beginPath();
-				_ctx8.arc(x, y, radius, 0, 2 * Math.PI, false);
-				_ctx8.fill();
-				_ctx8.restore();
+				ctx.beginPath();
+				ctx.arc(x, y, radius, 0, 2 * Math.PI, false);
+				ctx.fill();
+				ctx.restore();
 			}
 		}
 	}]);

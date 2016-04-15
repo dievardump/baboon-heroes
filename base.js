@@ -189,6 +189,8 @@ export class CurveQuad extends Shape {
 
 	drawBack(time) {
 		if (time <= this.duration) {
+			const ctx = this.ctx;
+
 			const perc = time/this.duration,
 				startPt = getQuadraticBezierXYatPercent(this.start, this.control, this.end, perc),
 				controlPt = [ this.end[0] + ~~((this.control[0] - this.end[0]) * perc), this.end[1] + ~~((this.control[1] - this.end[1]) * perc)];
