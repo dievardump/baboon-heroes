@@ -1,19 +1,15 @@
-import { Line, Arc, CurveQuad, ClearRect, ClearQuad, ClearArc, Part, animate } from '../base.js';
+import { Line, Arc, CurveQuad, ClearRect, ClearQuad, ClearArc, Part } from '../common.js';
 
-const canvas = document.querySelector('canvas'),
-	width = canvas.width,
-	height = canvas.height,
-	lineWidth = 4,
-	lineLength = 130,
-	duration = 300,
-	backColor = '#02557d',
-	color = '#fff';
+export function fantastic (canvas) {
+	const parts = [],
+		width = canvas.width,
+		height = canvas.height,
+		lineWidth = 4,
+		lineLength = 130,
+		duration = 300,
+		backColor = '#02557d',
+		color = '#fff';
 
-animate(canvas, populate());
-
-function populate () {
-	const parts = [];
-	// head
 	let part = new Part(width, height),
 	x = width/2 + 20,
 	y = height/2 + lineLength/2,

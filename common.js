@@ -7,7 +7,7 @@ function easeOutQuart(t, b, c, d) {
 };
 
 
-class Shape {
+export class Shape {
 	constructor() {
 		this.ctx = null;
 	}
@@ -207,7 +207,7 @@ export class CurveQuad extends Shape {
 	}
 }
 
-class Clear extends Shape {
+export class Clear extends Shape {
 	constructor() {
 		super();
 	}
@@ -360,63 +360,88 @@ export class Part {
 }
 
 
-export function animate(canvas, parts) {
-	const ctx = canvas.getContext('2d'),
-		width = canvas.width,
-		height = canvas.height;
+export class animate {
+	constructor(canvas) {
+		this.canvas = canvas;		
+		this.ctx = canvas.getContext('2d');
+		this.width = this.canvas.width;
+		this.height = this.canvas.height;
+		this.stopped = true;
+		this.reqStart = null;
+		this.parts = [];
+		this.reqId = null;
+	}
 
-	let reqStart = null;
-	function forward(time = 0) {
-		time = ~~time;
-		if (reqStart === null) {
-			reqStart = time;
-		}
+	load(parts) {
+		this.parts = parts;
+		this.stopped = false;
+		this.animate();
+	}	
 
-		let progress = time - reqStart,
-			ended = true;
+	stop() {
+		this.stopped = true;
+		cancelAnimationFrame(this.reqId);
+	}
 
-		ctx.clearRect(0, 0, width, height);
-		parts.forEach( (part) => {
-			part.draw(progress);
-			ctx.drawImage(part.canvas, 0, 0);
-			ended = ended && part.ended(progress);
-		});
+	animate() {
+		this.reqStart = null;
+		this.reqId = requestAnimationFrame(this.forward.bind(this));
+	}
 
-		if (!ended) {
-			requestAnimationFrame(forward);
-		} else {
-			reqStart = null;
-			setTimeout(() => requestAnimationFrame(backward), 1000);
+	forward(time = 0) {
+		if (!this.stopped) {
+			const parts = this.parts,
+				ctx = this.ctx;
+
+			time = ~~time;
+			if (this.reqStart === null) {
+				this.reqStart = time;
+			}
+
+			let progress = time - this.reqStart,
+				ended = true;
+
+			ctx.clearRect(0, 0, this.width, this.height);
+			parts.forEach( (part) => {
+				part.draw(progress);
+				ctx.drawImage(part.canvas, 0, 0);
+				ended = ended && part.ended(progress);
+			});
+
+			if (!ended) {
+				this.reqId = requestAnimationFrame(this.forward.bind(this));
+			} else {
+				this.reqStart = null;
+				setTimeout(() => this.reqId = requestAnimationFrame(this.backward.bind(this)), 1000);
+			}
 		}
 	}
 
-	function backward(time) {
-		let finish = true;
-		time = ~~time;
-		if (reqStart === null) {
-			reqStart = time;
-		}
+	backward(time) {
+		if (!this.stopped) {
+			const parts = this.parts,
+				ctx = this.ctx;			
 
-		let progress = time - reqStart;
-		ctx.clearRect(0, 0, width, height);
+			let finish = true;
+			time = ~~time;
+			if (this.reqStart === null) {
+				this.reqStart = time;
+			}
 
-		parts.forEach( (part) => {
-			part.drawBack(progress);
-			ctx.drawImage(part.canvas, 0, 0);
-			finish = finish && part.endedBack(progress);
-		});
+			let progress = time - this.reqStart;
+			ctx.clearRect(0, 0, this.width, this.height);
 
-		if (!finish) {
-			requestAnimationFrame(backward);  
-		} else {
-			setTimeout(begin, 1500);
+			parts.forEach( (part) => {
+				part.drawBack(progress);
+				ctx.drawImage(part.canvas, 0, 0);
+				finish = finish && part.endedBack(progress);
+			});
+
+			if (!finish) {
+				this.reqId = requestAnimationFrame(this.backward.bind(this));  
+			} else {
+				setTimeout(this.animate.bind(this), 1500);
+			}
 		}
 	}
-
-	function begin() {
-		reqStart = null;
-		requestAnimationFrame(forward);
-	}
-
-	begin();
 }

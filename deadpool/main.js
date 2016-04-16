@@ -7,8 +7,6 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-exports.animate = animate;
-
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
@@ -40,7 +38,7 @@ var Shape = function () {
 	return Shape;
 }();
 
-var Line = exports.Line = function (_Shape) {
+var Line = function (_Shape) {
 	_inherits(Line, _Shape);
 
 	function Line(start, end, color, lineWidth, timer, duration) {
@@ -99,7 +97,7 @@ var Line = exports.Line = function (_Shape) {
 	return Line;
 }(Shape);
 
-var Arc = exports.Arc = function (_Shape2) {
+var Arc = function (_Shape2) {
 	_inherits(Arc, _Shape2);
 
 	function Arc(center, radius, start, length, color, lineWidth, timer, duration) {
@@ -193,7 +191,7 @@ function getQuadraticBezierXYatPercent(startPt, controlPt, endPt, percent) {
 	return [x, y];
 }
 
-var CurveQuad = exports.CurveQuad = function (_Shape3) {
+var CurveQuad = function (_Shape3) {
 	_inherits(CurveQuad, _Shape3);
 
 	function CurveQuad(start, end, control, color, lineWidth, timer, duration) {
@@ -284,7 +282,7 @@ var Clear = function (_Shape4) {
 	return Clear;
 }(Shape);
 
-var ClearRect = exports.ClearRect = function (_Clear) {
+var ClearRect = function (_Clear) {
 	_inherits(ClearRect, _Clear);
 
 	function ClearRect(x, y, width, height, time) {
@@ -314,7 +312,7 @@ var ClearRect = exports.ClearRect = function (_Clear) {
 	return ClearRect;
 }(Clear);
 
-var ClearQuad = exports.ClearQuad = function (_Clear2) {
+var ClearQuad = function (_Clear2) {
 	_inherits(ClearQuad, _Clear2);
 
 	function ClearQuad(x, y, x2, y2, height, time) {
@@ -355,7 +353,7 @@ var ClearQuad = exports.ClearQuad = function (_Clear2) {
 	return ClearQuad;
 }(Clear);
 
-var ClearArc = exports.ClearArc = function (_Clear3) {
+var ClearArc = function (_Clear3) {
 	_inherits(ClearArc, _Clear3);
 
 	function ClearArc(center, radius, time) {
@@ -392,7 +390,7 @@ var ClearArc = exports.ClearArc = function (_Clear3) {
 	return ClearArc;
 }(Clear);
 
-var Part = exports.Part = function () {
+var Part = function () {
 	function Part(width, height) {
 		var debug = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
 
@@ -469,97 +467,143 @@ var Part = exports.Part = function () {
 	return Part;
 }();
 
-function animate(canvas, parts) {
-	var ctx = canvas.getContext('2d'),
-	    width = canvas.width,
-	    height = canvas.height;
+var animate = exports.animate = function () {
+	function animate(canvas) {
+		_classCallCheck(this, animate);
 
-	var reqStart = null;
-	function forward() {
-		var time = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
-
-		time = ~ ~time;
-		if (reqStart === null) {
-			reqStart = time;
-		}
-
-		var progress = time - reqStart,
-		    ended = true;
-
-		ctx.clearRect(0, 0, width, height);
-		parts.forEach(function (part) {
-			part.draw(progress);
-			ctx.drawImage(part.canvas, 0, 0);
-			ended = ended && part.ended(progress);
-		});
-
-		if (!ended) {
-			requestAnimationFrame(forward);
-		} else {
-			reqStart = null;
-			setTimeout(function () {
-				return requestAnimationFrame(backward);
-			}, 1000);
-		}
+		this.canvas = canvas;
+		this.ctx = canvas.getContext('2d');
+		this.width = this.canvas.width;
+		this.height = this.canvas.height;
+		this.stopped = true;
+		this.reqStart = null;
+		this.parts = [];
+		this.reqId = null;
 	}
 
-	function backward(time) {
-		var finish = true;
-		time = ~ ~time;
-		if (reqStart === null) {
-			reqStart = time;
+	_createClass(animate, [{
+		key: 'load',
+		value: function load(parts) {
+			this.parts = parts;
+			this.stopped = false;
+			this.animate();
 		}
-
-		var progress = time - reqStart;
-		ctx.clearRect(0, 0, width, height);
-
-		parts.forEach(function (part) {
-			part.drawBack(progress);
-			ctx.drawImage(part.canvas, 0, 0);
-			finish = finish && part.endedBack(progress);
-		});
-
-		if (!finish) {
-			requestAnimationFrame(backward);
-		} else {
-			setTimeout(begin, 1500);
+	}, {
+		key: 'stop',
+		value: function stop() {
+			this.stopped = true;
+			cancelAnimationFrame(this.reqId);
 		}
-	}
+	}, {
+		key: 'animate',
+		value: function animate() {
+			this.reqStart = null;
+			this.reqId = requestAnimationFrame(this.forward.bind(this));
+		}
+	}, {
+		key: 'forward',
+		value: function forward() {
+			var _this9 = this;
 
-	function begin() {
-		reqStart = null;
-		requestAnimationFrame(forward);
-	}
+			var time = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
 
-	begin();
-}
+			if (!this.stopped) {
+				(function () {
+					var parts = _this9.parts,
+					    ctx = _this9.ctx;
+
+					time = ~ ~time;
+					if (_this9.reqStart === null) {
+						_this9.reqStart = time;
+					}
+
+					var progress = time - _this9.reqStart,
+					    ended = true;
+
+					ctx.clearRect(0, 0, _this9.width, _this9.height);
+					parts.forEach(function (part) {
+						part.draw(progress);
+						ctx.drawImage(part.canvas, 0, 0);
+						ended = ended && part.ended(progress);
+					});
+
+					if (!ended) {
+						_this9.reqId = requestAnimationFrame(_this9.forward.bind(_this9));
+					} else {
+						_this9.reqStart = null;
+						setTimeout(function () {
+							return _this9.reqId = requestAnimationFrame(_this9.backward.bind(_this9));
+						}, 1000);
+					}
+				})();
+			}
+		}
+	}, {
+		key: 'backward',
+		value: function backward(time) {
+			var _this10 = this;
+
+			if (!this.stopped) {
+				(function () {
+					var parts = _this10.parts,
+					    ctx = _this10.ctx;
+
+					var finish = true;
+					time = ~ ~time;
+					if (_this10.reqStart === null) {
+						_this10.reqStart = time;
+					}
+
+					var progress = time - _this10.reqStart;
+					ctx.clearRect(0, 0, _this10.width, _this10.height);
+
+					parts.forEach(function (part) {
+						part.drawBack(progress);
+						ctx.drawImage(part.canvas, 0, 0);
+						finish = finish && part.endedBack(progress);
+					});
+
+					if (!finish) {
+						_this10.reqId = requestAnimationFrame(_this10.backward.bind(_this10));
+					} else {
+						setTimeout(_this10.animate.bind(_this10), 1500);
+					}
+				})();
+			}
+		}
+	}]);
+
+	return animate;
+}();
 
 },{}],2:[function(require,module,exports){
 'use strict';
 
-var _base = require('../base.js');
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.deadpool = deadpool;
 
-var canvas = document.querySelector('canvas'),
-    width = canvas.width,
-    height = canvas.height,
-    lineWidth = 4,
-    duration = 300,
-    headColor = '#fa482a',
-    eyesColor = '#fff';
+var _common = require('../common.js');
 
-(0, _base.animate)(canvas, populate());
+function deadpool(canvas) {
+	var parts = [],
+	    width = canvas.width,
+	    height = canvas.height,
+	    lineWidth = 4,
+	    duration = 300,
+	    headColor = '#fa482a',
+	    eyesColor = '#fff';
 
-function populate() {
-	var parts = [];
 	var x = width / 2,
 	    y = height / 2,
 	    startTime = 0;
 
 	// head
-	var part = new _base.Part(width, height);
+	var part = new _common.Part(width, height);
 	for (var i = 0, arc = null; i < 4; i++) {
 		startTime = startTime + duration / 4;
-		arc = new _base.Arc([x, y], 104 + i * lineWidth * 2, -Math.PI / 2, -2 * Math.PI, headColor, lineWidth, startTime, duration);
+		arc = new _common.Arc([x, y], 104 + i * lineWidth * 2, -Math.PI / 2, -2 * Math.PI, headColor, lineWidth, startTime, duration);
 		arc.anticlockwise = true;
 		part.add(arc);
 	}
@@ -568,22 +612,22 @@ function populate() {
 	startTime = startTime + duration / 4;
 
 	// nose
-	part = new _base.Part(width, height);
+	part = new _common.Part(width, height);
 	for (var _i = 0, _arc = null; _i < 4; _i++) {
 		startTime = startTime + duration / 4;
-		part.add(new _base.Line([x - 12 + _i * lineWidth * 2, y - 104], [x - 12 + _i * lineWidth * 2, y + 104], headColor, lineWidth, startTime, duration));
+		part.add(new _common.Line([x - 12 + _i * lineWidth * 2, y - 104], [x - 12 + _i * lineWidth * 2, y + 104], headColor, lineWidth, startTime, duration));
 	}
 
 	parts.unshift(part);
 	startTime = startTime + duration / 4;
 
 	// eyes
-	part = new _base.Part(width, height);
+	part = new _common.Part(width, height);
 	for (var _i2 = 0, _arc2 = null; _i2 < 4; _i2++) {
 		startTime = startTime + duration / 4;
-		part.add(new _base.Line([x - 33, y - 10 + _i2 * lineWidth * 2.2], [x - 81, y - 25 + _i2 * lineWidth * 2.2], eyesColor, lineWidth, startTime, duration));
+		part.add(new _common.Line([x - 33, y - 10 + _i2 * lineWidth * 2.2], [x - 81, y - 25 + _i2 * lineWidth * 2.2], eyesColor, lineWidth, startTime, duration));
 
-		part.add(new _base.Line([x + 33, y - 10 + _i2 * lineWidth * 2.2], [x + 81, y - 25 + _i2 * lineWidth * 2.2], eyesColor, lineWidth, startTime, duration));
+		part.add(new _common.Line([x + 33, y - 10 + _i2 * lineWidth * 2.2], [x + 81, y - 25 + _i2 * lineWidth * 2.2], eyesColor, lineWidth, startTime, duration));
 	}
 
 	parts.unshift(part);
@@ -591,4 +635,4 @@ function populate() {
 	return parts;
 }
 
-},{"../base.js":1}]},{},[2]);
+},{"../common.js":1}]},{},[2]);

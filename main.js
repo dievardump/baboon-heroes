@@ -4,6 +4,85 @@
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
+exports.aquaman = aquaman;
+
+var _common = require('../common.js');
+
+function aquaman(canvas) {
+	var parts = [],
+	    width = canvas.width,
+	    height = canvas.height,
+	    lineWidth = 4,
+	    duration = 300,
+	    color = '#fcb02d';
+
+	var x = width / 2,
+	    y = height / 2 - 130,
+	    endX = x - 105,
+	    endY = y + 170,
+	    startTime = 0;
+
+	// left side
+	var part = new _common.Part(width, height);
+	for (var i = 0; i < 4; i++) {
+		startTime = startTime + duration / 4;
+		part.add(new _common.Line([x + 2, y + 1 + i * lineWidth * 3.5], [endX + i * lineWidth * 1.3, endY + i * lineWidth * 1.5], color, lineWidth, startTime, duration));
+	}
+	part.add(new _common.ClearRect(x, y, x + lineWidth, y + lineWidth * 3 * 5, startTime - duration));
+	part.add(new _common.ClearQuad(endX - 1, endY - lineWidth, endX + lineWidth * 6, endY + lineWidth * 2.5, lineWidth * 6, startTime - duration));
+
+	parts.push(part);
+
+	startTime = startTime + duration / 4;
+
+	// right side
+	part = new _common.Part(width, height);
+	endX = x + 105;
+	for (var _i = 0; _i < 4; _i++) {
+		startTime = startTime + duration / 4;
+		part.add(new _common.Line([x - 2, y + 1 + _i * lineWidth * 3.5], [endX - _i * lineWidth * 1.3, endY + _i * lineWidth * 1.5], color, lineWidth, startTime, duration));
+	}
+	part.add(new _common.ClearRect(x - lineWidth, y, lineWidth, y + lineWidth * 3 * 5, startTime - duration));
+	part.add(new _common.ClearQuad(endX + 1, endY - lineWidth, endX - lineWidth * 6, endY + lineWidth * 2.5, lineWidth * 6, startTime - duration));
+
+	parts.push(part);
+
+	startTime = startTime + duration;
+
+	// down side
+	part = new _common.Part(width, height);
+	y = height / 2;
+
+	for (var _i2 = 0; _i2 < 4; _i2++) {
+		part.add(new _common.Line([x - 100 - _i2 * lineWidth * 1, y + 28 + _i2 * lineWidth * 1.5], [x - 40, y + 28 + _i2 * lineWidth * 2 + 8 * lineWidth], color, lineWidth, startTime + (4 - _i2) * duration / 4, duration));
+
+		part.add(new _common.Line([x + 100 + _i2 * lineWidth * 1, y + 28 + _i2 * lineWidth * 1.5], [x + 40, y + 28 + _i2 * lineWidth * 2 + 8 * lineWidth], color, lineWidth, startTime + (4 - _i2) * duration / 4, duration));
+	}
+
+	part.add(new _common.ClearArc([width / 2, height / 2 + 81], 45, startTime));
+
+	parts.push(part);
+
+	startTime = startTime + duration + duration / 4;
+
+	// circles middle
+	part = new _common.Part(width, height);
+	y = height / 2;
+	for (var _i3 = 0; _i3 < 4; _i3++) {
+		startTime = startTime + duration / 4;
+		part.add(new _common.Arc([width / 2, height / 2 + 81], 47 + _i3 * lineWidth * 2, Math.PI + Math.PI / 6, 2 * Math.PI / 3, color, lineWidth, startTime, duration));
+	}
+
+	parts.push(part);
+	return parts;
+}
+
+},{"../common.js":2}],2:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -21,7 +100,7 @@ function easeOutQuart(t, b, c, d) {
 	return -c * (t * t * t * t - 1) + b;
 };
 
-var Shape = function () {
+var Shape = exports.Shape = function () {
 	function Shape() {
 		_classCallCheck(this, Shape);
 
@@ -38,7 +117,7 @@ var Shape = function () {
 	return Shape;
 }();
 
-var Line = function (_Shape) {
+var Line = exports.Line = function (_Shape) {
 	_inherits(Line, _Shape);
 
 	function Line(start, end, color, lineWidth, timer, duration) {
@@ -97,7 +176,7 @@ var Line = function (_Shape) {
 	return Line;
 }(Shape);
 
-var Arc = function (_Shape2) {
+var Arc = exports.Arc = function (_Shape2) {
 	_inherits(Arc, _Shape2);
 
 	function Arc(center, radius, start, length, color, lineWidth, timer, duration) {
@@ -191,7 +270,7 @@ function getQuadraticBezierXYatPercent(startPt, controlPt, endPt, percent) {
 	return [x, y];
 }
 
-var CurveQuad = function (_Shape3) {
+var CurveQuad = exports.CurveQuad = function (_Shape3) {
 	_inherits(CurveQuad, _Shape3);
 
 	function CurveQuad(start, end, control, color, lineWidth, timer, duration) {
@@ -260,7 +339,7 @@ var CurveQuad = function (_Shape3) {
 	return CurveQuad;
 }(Shape);
 
-var Clear = function (_Shape4) {
+var Clear = exports.Clear = function (_Shape4) {
 	_inherits(Clear, _Shape4);
 
 	function Clear() {
@@ -282,7 +361,7 @@ var Clear = function (_Shape4) {
 	return Clear;
 }(Shape);
 
-var ClearRect = function (_Clear) {
+var ClearRect = exports.ClearRect = function (_Clear) {
 	_inherits(ClearRect, _Clear);
 
 	function ClearRect(x, y, width, height, time) {
@@ -312,7 +391,7 @@ var ClearRect = function (_Clear) {
 	return ClearRect;
 }(Clear);
 
-var ClearQuad = function (_Clear2) {
+var ClearQuad = exports.ClearQuad = function (_Clear2) {
 	_inherits(ClearQuad, _Clear2);
 
 	function ClearQuad(x, y, x2, y2, height, time) {
@@ -353,7 +432,7 @@ var ClearQuad = function (_Clear2) {
 	return ClearQuad;
 }(Clear);
 
-var ClearArc = function (_Clear3) {
+var ClearArc = exports.ClearArc = function (_Clear3) {
 	_inherits(ClearArc, _Clear3);
 
 	function ClearArc(center, radius, time) {
@@ -390,7 +469,7 @@ var ClearArc = function (_Clear3) {
 	return ClearArc;
 }(Clear);
 
-var Part = function () {
+var Part = exports.Part = function () {
 	function Part(width, height) {
 		var debug = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
 
@@ -576,7 +655,66 @@ var animate = exports.animate = function () {
 	return animate;
 }();
 
-},{}],2:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.deadpool = deadpool;
+
+var _common = require('../common.js');
+
+function deadpool(canvas) {
+	var parts = [],
+	    width = canvas.width,
+	    height = canvas.height,
+	    lineWidth = 4,
+	    duration = 300,
+	    headColor = '#fa482a',
+	    eyesColor = '#fff';
+
+	var x = width / 2,
+	    y = height / 2,
+	    startTime = 0;
+
+	// head
+	var part = new _common.Part(width, height);
+	for (var i = 0, arc = null; i < 4; i++) {
+		startTime = startTime + duration / 4;
+		arc = new _common.Arc([x, y], 104 + i * lineWidth * 2, -Math.PI / 2, -2 * Math.PI, headColor, lineWidth, startTime, duration);
+		arc.anticlockwise = true;
+		part.add(arc);
+	}
+
+	parts.push(part);
+	startTime = startTime + duration / 4;
+
+	// nose
+	part = new _common.Part(width, height);
+	for (var _i = 0, _arc = null; _i < 4; _i++) {
+		startTime = startTime + duration / 4;
+		part.add(new _common.Line([x - 12 + _i * lineWidth * 2, y - 104], [x - 12 + _i * lineWidth * 2, y + 104], headColor, lineWidth, startTime, duration));
+	}
+
+	parts.unshift(part);
+	startTime = startTime + duration / 4;
+
+	// eyes
+	part = new _common.Part(width, height);
+	for (var _i2 = 0, _arc2 = null; _i2 < 4; _i2++) {
+		startTime = startTime + duration / 4;
+		part.add(new _common.Line([x - 33, y - 10 + _i2 * lineWidth * 2.2], [x - 81, y - 25 + _i2 * lineWidth * 2.2], eyesColor, lineWidth, startTime, duration));
+
+		part.add(new _common.Line([x + 33, y - 10 + _i2 * lineWidth * 2.2], [x + 81, y - 25 + _i2 * lineWidth * 2.2], eyesColor, lineWidth, startTime, duration));
+	}
+
+	parts.unshift(part);
+
+	return parts;
+}
+
+},{"../common.js":2}],4:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -650,4 +788,259 @@ function fantastic(canvas) {
 	return parts;
 }
 
-},{"../common.js":1}]},{},[2]);
+},{"../common.js":2}],5:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.flash = flash;
+
+var _common = require('../common.js');
+
+function flash(canvas) {
+	var parts = [],
+	    width = canvas.width,
+	    height = canvas.height,
+	    lineWidth = 4,
+	    duration = 300,
+	    sColor = '#ffbd3d',
+	    circleColor = '#fff';
+
+	var x = width / 2,
+	    y = height / 2,
+	    startTime = 0;
+
+	// /
+	var part = new _common.Part(width, height);
+	for (var i = 0, arc = null; i < 4; i++) {
+		startTime = startTime + duration / 4;
+		part.add(new _common.Line([x + 75, y - 160 + i * lineWidth * 3], [x - 60, y - 30 + i * lineWidth * 3], sColor, lineWidth, startTime, duration));
+	}
+	part.add(new _common.ClearRect(x + 73, y - 161, lineWidth, lineWidth * 12, startTime - duration));
+	part.add(new _common.ClearRect(x - 59 - lineWidth, y - 30 - lineWidth, lineWidth, lineWidth * 12, startTime - duration));
+	parts.push(part);
+
+	// -
+	part = new _common.Part(width, height);
+	for (var _i = 0, _arc = null; _i < 4; _i++) {
+		startTime = startTime + duration / 4;
+		part.add(new _common.Line([x - 35 - _i * lineWidth * 2, y - 19 + _i * lineWidth * 2], [x - 35 - _i * lineWidth * 2 + 97, y - 19 + _i * lineWidth * 2], sColor, lineWidth, startTime, duration));
+	}
+
+	// /
+	parts.push(part);
+	part = new _common.Part(width, height);
+	for (var _i2 = 0, _arc2 = null; _i2 < 4; _i2++) {
+		startTime = startTime + duration / 4;
+		part.add(new _common.Line([x + 65, y - 20 + _i2 * lineWidth * 3], [x - 80, y + 120 + _i2 * lineWidth * 3], sColor, lineWidth, startTime, duration));
+	}
+	part.add(new _common.ClearRect(x + 62, y - 21, lineWidth, lineWidth * 12, startTime - duration));
+	part.add(new _common.ClearRect(x - 79 - lineWidth, y + 120 - lineWidth, lineWidth, lineWidth * 12, startTime - duration));
+	parts.push(part);
+
+	startTime = startTime + duration / 4;
+	part = new _common.Part(width, height);
+	for (var _i3 = 0, _arc3 = null; _i3 < 4; _i3++) {
+		startTime = startTime + duration / 4;
+		_arc3 = new _common.Arc([x, y], 133 - _i3 * lineWidth * 2, -(Math.PI / 3 + Math.PI / 15), -2 * Math.PI, circleColor, lineWidth, startTime, duration);
+		_arc3.anticlockwise = true;
+		part.add(_arc3);
+	}
+
+	part.add(new _common.ClearQuad(x + 75, y - 160 + lineWidth * 4, x - 5, y - 160 + lineWidth * 24, lineWidth * 12, startTime - duration));
+	part.add(new _common.ClearQuad(x + 15, y + 30 + lineWidth * 4, x - 75, y + 35 + lineWidth * 24, lineWidth * 12, startTime - duration));
+
+	parts.push(part);
+
+	return parts;
+}
+
+},{"../common.js":2}],6:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.green = green;
+
+var _common = require('../common.js');
+
+function green(canvas) {
+	var parts = [],
+	    width = canvas.width,
+	    height = canvas.height,
+	    lineWidth = 4,
+	    duration = 300,
+	    color = '#359a22';
+
+	var x = width / 2,
+	    y = height / 2,
+	    startTime = 0;
+
+	// head
+	var part = new _common.Part(width, height),
+	    arc = new _common.Arc([x, y], 145, -Math.PI / 2, -2 * Math.PI, '#fff', lineWidth, startTime, duration);
+	arc.anticlockwise = true;
+	arc.fill = true;
+	part.add(arc);
+	parts.push(part);
+	part.delayBack = duration;
+	startTime = startTime + duration;
+
+	// top
+	part = new _common.Part(width, height);
+	for (var i = 0, _arc = null; i < 4; i++) {
+		startTime = startTime + duration / 4;
+		part.add(new _common.Line([x - 77, y - 77 + i * lineWidth * 2], [x + 77, y - 77 + i * lineWidth * 2], color, lineWidth, startTime, duration));
+	}
+
+	parts.push(part);
+	startTime = startTime + duration / 4;
+
+	// bottom
+	part = new _common.Part(width, height);
+	for (var _i = 0, _arc2 = null; _i < 4; _i++) {
+		startTime = startTime + duration / 4;
+		part.add(new _common.Line([x + 77, y + 77 - _i * lineWidth * 2], [x - 77, y + 77 - _i * lineWidth * 2], color, lineWidth, startTime, duration));
+	}
+
+	parts.push(part);
+	startTime = startTime + duration / 4;
+
+	// center
+	part = new _common.Part(width, height);
+	for (var _i2 = 0, _arc3 = null; _i2 < 4; _i2++) {
+		startTime = startTime + duration / 4;
+		_arc3 = new _common.Arc([x, y], 77 - _i2 * lineWidth * 2, -Math.PI / 2, -2 * Math.PI, color, lineWidth, startTime, duration);
+		_arc3.anticlockwise = true;
+		part.add(_arc3);
+	}
+
+	part.add(new _common.ClearRect(x - 77, y - 80, 145, 27, startTime - duration));
+	part.add(new _common.ClearRect(x - 77, y + 53, 145, 27, startTime - duration));
+
+	parts.push(part);
+
+	return parts;
+}
+
+},{"../common.js":2}],7:[function(require,module,exports){
+'use strict';
+
+var _common = require('./common.js');
+
+var _main = require('./aquaman/main.jsx');
+
+var _main2 = require('./deadpool/main.jsx');
+
+var _main3 = require('./fantastic/main.jsx');
+
+var _main4 = require('./flash/main.jsx');
+
+var _main5 = require('./green/main.jsx');
+
+var _main6 = require('./strange/main.jsx');
+
+var links = Array.from(document.querySelectorAll('a[data-anim]')),
+    canvas = document.querySelector('canvas'),
+    animations = {};
+
+animations.aquaman = _main.aquaman;
+animations.deadpool = _main2.deadpool;
+animations.fantastic = _main3.fantastic;
+animations.flash = _main4.flash;
+animations.green = _main5.green;
+animations.strange = _main6.strange;
+
+var anim = null;
+
+links.forEach(function (link) {
+	link.addEventListener('click', function (event) {
+		event.preventDefault();
+		launch(link);
+	}, false);
+});
+
+function launch(link) {
+	var fnName = link.getAttribute('data-anim');
+	if (fnName && typeof animations[fnName] === 'function') {
+		canvas.setAttribute('data-anim', fnName);
+		if (anim) {
+			anim.stop();
+		}
+
+		anim = new _common.animate(canvas);
+		anim.load(animations[fnName](canvas));
+	}
+}
+
+if (links.length) {
+	launch(links[0]);
+}
+
+},{"./aquaman/main.jsx":1,"./common.js":2,"./deadpool/main.jsx":3,"./fantastic/main.jsx":4,"./flash/main.jsx":5,"./green/main.jsx":6,"./strange/main.jsx":8}],8:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.strange = strange;
+
+var _common = require('../common.js');
+
+function strange(canvas) {
+	var parts = [],
+	    width = canvas.width,
+	    height = canvas.height,
+	    lineWidth = 4,
+	    duration = 300,
+	    eyeColor = '#ffdc3d',
+	    irisColor = '#a6ceff';
+
+	var x = width / 2,
+	    y = height / 2,
+	    startTime = 0;
+
+	// eye
+	var part = new _common.Part(width, height);
+	for (var i = 0, arc = null; i < 4; i++) {
+		startTime = startTime + duration / 4;
+		arc = new _common.Arc([x, y], 135 - i * lineWidth * 2, -Math.PI / 2, -2 * Math.PI, eyeColor, lineWidth, startTime, duration);
+		arc.anticlockwise = true;
+		part.add(arc);
+	}
+
+	parts.push(part);
+	startTime = startTime + duration;
+
+	part = new _common.Part(width, height);
+	for (var _i = 0, _arc = null; _i < 4; _i++) {
+		startTime = startTime + duration / 2;
+		part.add(new _common.CurveQuad([x - 99 - _i * lineWidth * 1.05, y - 50 + _i * 1.5 * lineWidth * 2.7], [x + 99 + _i * lineWidth * 1.05, y - 50 + _i * 1.5 * lineWidth * 2.7], [x, y - 120 + lineWidth * 0.5], eyeColor, lineWidth, startTime, duration / 4));
+	}
+	parts.push(part);
+	startTime = startTime + duration;
+
+	part = new _common.Part(width, height);
+	for (var _i2 = 0, _arc2 = null; _i2 < 4; _i2++) {
+		startTime = startTime + duration / 2;
+		part.add(new _common.CurveQuad([x + 99 + _i2 * lineWidth * 1.05, y + 50 - _i2 * 1.5 * lineWidth * 2.7], [x - 99 - _i2 * lineWidth * 1.05, y + 50 - _i2 * 1.5 * lineWidth * 2.7], [x, y + 120 - lineWidth * 0.5], eyeColor, lineWidth, startTime, duration / 4));
+	}
+	parts.push(part);
+	startTime = startTime + duration;
+
+	// iris
+	part = new _common.Part(width, height);
+	for (var _i3 = 0, _arc3 = null; _i3 < 4; _i3++) {
+		startTime = startTime + duration / 4;
+		_arc3 = new _common.Arc([x, y], 50 - _i3 * lineWidth * 2, -Math.PI / 2, 2 * Math.PI, irisColor, lineWidth, startTime, duration);
+		part.add(_arc3);
+	}
+
+	parts.push(part);
+
+	return parts;
+}
+
+},{"../common.js":2}]},{},[7]);

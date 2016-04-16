@@ -1,17 +1,14 @@
-import { Line, Arc, CurveQuad, ClearRect, ClearQuad, ClearArc, Part, animate } from '../base.js';
+import { Line, Arc, CurveQuad, ClearRect, ClearQuad, ClearArc, Part } from '../common.js';
 
-const canvas = document.querySelector('canvas'),
-	width = canvas.width,
-	height = canvas.height,
-	lineWidth = 4,
-	duration = 300,
-	headColor = '#fa482a',
-	eyesColor = '#fff';
+export function deadpool(canvas) {
+	const parts = [],
+		width = canvas.width,
+		height = canvas.height,
+		lineWidth = 4,
+		duration = 300,
+		headColor = '#fa482a',
+		eyesColor = '#fff';
 
-animate(canvas, populate());
-
-function populate () {
-	const parts = [];
 	let x = width/2,
 		y = height/2,
 		startTime = 0;

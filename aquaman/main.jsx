@@ -1,16 +1,12 @@
-import { Line, Arc, CurveQuad, ClearRect, ClearQuad, ClearArc, Part, animate } from '../base.js';
+import { Line, Arc, CurveQuad, ClearRect, ClearQuad, ClearArc, Part } from '../common.js';
 
-const canvas = document.querySelector('canvas'),
-	width = canvas.width,
-	height = canvas.height,
-	lineWidth = 4,
-	duration = 300,
-	color = '#fcb02d';
-
-animate(canvas, populate());
-
-function populate () {
-	const parts = [];
+export function aquaman(canvas) {
+	const parts = [],
+		width = canvas.width,
+		height = canvas.height,
+		lineWidth = 4,
+		duration = 300,
+		color = '#fcb02d';
 
 	let x = width/2,
 		y = height/2 - 130,

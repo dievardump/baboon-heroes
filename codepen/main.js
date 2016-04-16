@@ -1,10 +1,6 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -467,7 +463,7 @@ var Part = function () {
 	return Part;
 }();
 
-var animate = exports.animate = function () {
+var animate = function () {
 	function animate(canvas) {
 		_classCallCheck(this, animate);
 
@@ -576,17 +572,264 @@ var animate = exports.animate = function () {
 	return animate;
 }();
 
-},{}],2:[function(require,module,exports){
-'use strict';
+var links = Array.from(document.querySelectorAll('a[data-anim]')),
+    canvas = document.querySelector('canvas'),
+    animations = {};
 
-Object.defineProperty(exports, "__esModule", {
-	value: true
+var anim = null;
+
+links.forEach(function (link) {
+	link.addEventListener('click', function (event) {
+		event.preventDefault();
+		launch(link);
+	}, false);
 });
-exports.fantastic = fantastic;
 
-var _common = require('../common.js');
+function launch(link) {
+	var fnName = link.getAttribute('data-anim');
+	if (fnName && typeof animations[fnName] === 'function') {
+		canvas.setAttribute('data-anim', fnName);
+		if (anim) {
+			anim.stop();
+		}
 
-function fantastic(canvas) {
+		anim = new animate(canvas);
+		anim.load(animations[fnName](canvas));
+	}
+}
+
+animations.aquaman = function aquaman(canvas) {
+	var parts = [],
+	    width = canvas.width,
+	    height = canvas.height,
+	    lineWidth = 4,
+	    duration = 300,
+	    color = '#fcb02d';
+
+	var x = width / 2,
+	    y = height / 2 - 130,
+	    endX = x - 105,
+	    endY = y + 170,
+	    startTime = 0;
+
+	// left side
+	var part = new Part(width, height);
+	for (var i = 0; i < 4; i++) {
+		startTime = startTime + duration / 4;
+		part.add(new Line([x + 2, y + 1 + i * lineWidth * 3.5], [endX + i * lineWidth * 1.3, endY + i * lineWidth * 1.5], color, lineWidth, startTime, duration));
+	}
+	part.add(new ClearRect(x, y, x + lineWidth, y + lineWidth * 3 * 5, startTime - duration));
+	part.add(new ClearQuad(endX - 1, endY - lineWidth, endX + lineWidth * 6, endY + lineWidth * 2.5, lineWidth * 6, startTime - duration));
+
+	parts.push(part);
+
+	startTime = startTime + duration / 4;
+
+	// right side
+	part = new Part(width, height);
+	endX = x + 105;
+	for (var _i = 0; _i < 4; _i++) {
+		startTime = startTime + duration / 4;
+		part.add(new Line([x - 2, y + 1 + _i * lineWidth * 3.5], [endX - _i * lineWidth * 1.3, endY + _i * lineWidth * 1.5], color, lineWidth, startTime, duration));
+	}
+	part.add(new ClearRect(x - lineWidth, y, lineWidth, y + lineWidth * 3 * 5, startTime - duration));
+	part.add(new ClearQuad(endX + 1, endY - lineWidth, endX - lineWidth * 6, endY + lineWidth * 2.5, lineWidth * 6, startTime - duration));
+
+	parts.push(part);
+
+	startTime = startTime + duration;
+
+	// down side
+	part = new Part(width, height);
+	y = height / 2;
+
+	for (var _i2 = 0; _i2 < 4; _i2++) {
+		part.add(new Line([x - 100 - _i2 * lineWidth * 1, y + 28 + _i2 * lineWidth * 1.5], [x - 40, y + 28 + _i2 * lineWidth * 2 + 8 * lineWidth], color, lineWidth, startTime + (4 - _i2) * duration / 4, duration));
+
+		part.add(new Line([x + 100 + _i2 * lineWidth * 1, y + 28 + _i2 * lineWidth * 1.5], [x + 40, y + 28 + _i2 * lineWidth * 2 + 8 * lineWidth], color, lineWidth, startTime + (4 - _i2) * duration / 4, duration));
+	}
+
+	part.add(new ClearArc([width / 2, height / 2 + 81], 45, startTime));
+
+	parts.push(part);
+
+	startTime = startTime + duration + duration / 4;
+
+	// circles middle
+	part = new Part(width, height);
+	y = height / 2;
+	for (var _i3 = 0; _i3 < 4; _i3++) {
+		startTime = startTime + duration / 4;
+		part.add(new Arc([width / 2, height / 2 + 81], 47 + _i3 * lineWidth * 2, Math.PI + Math.PI / 6, 2 * Math.PI / 3, color, lineWidth, startTime, duration));
+	}
+
+	parts.push(part);
+	return parts;
+};
+
+animations.green = function green(canvas) {
+	var parts = [],
+	    width = canvas.width,
+	    height = canvas.height,
+	    lineWidth = 4,
+	    duration = 300,
+	    color = '#359a22';
+
+	var x = width / 2,
+	    y = height / 2,
+	    startTime = 0;
+
+	// head
+	var part = new Part(width, height),
+	    arc = new Arc([x, y], 145, -Math.PI / 2, -2 * Math.PI, '#fff', lineWidth, startTime, duration);
+	arc.anticlockwise = true;
+	arc.fill = true;
+	part.add(arc);
+	parts.push(part);
+	part.delayBack = duration;
+	startTime = startTime + duration;
+
+	// top
+	part = new Part(width, height);
+	for (var i = 0, _arc = null; i < 4; i++) {
+		startTime = startTime + duration / 4;
+		part.add(new Line([x - 77, y - 77 + i * lineWidth * 2], [x + 77, y - 77 + i * lineWidth * 2], color, lineWidth, startTime, duration));
+	}
+
+	parts.push(part);
+	startTime = startTime + duration / 4;
+
+	// bottom
+	part = new Part(width, height);
+	for (var _i4 = 0, _arc2 = null; _i4 < 4; _i4++) {
+		startTime = startTime + duration / 4;
+		part.add(new Line([x + 77, y + 77 - _i4 * lineWidth * 2], [x - 77, y + 77 - _i4 * lineWidth * 2], color, lineWidth, startTime, duration));
+	}
+
+	parts.push(part);
+	startTime = startTime + duration / 4;
+
+	// center
+	part = new Part(width, height);
+	for (var _i5 = 0, _arc3 = null; _i5 < 4; _i5++) {
+		startTime = startTime + duration / 4;
+		_arc3 = new Arc([x, y], 77 - _i5 * lineWidth * 2, -Math.PI / 2, -2 * Math.PI, color, lineWidth, startTime, duration);
+		_arc3.anticlockwise = true;
+		part.add(_arc3);
+	}
+
+	part.add(new ClearRect(x - 77, y - 80, 145, 27, startTime - duration));
+	part.add(new ClearRect(x - 77, y + 53, 145, 27, startTime - duration));
+
+	parts.push(part);
+
+	return parts;
+};
+
+animations.strange = function strange(canvas) {
+	var parts = [],
+	    width = canvas.width,
+	    height = canvas.height,
+	    lineWidth = 4,
+	    duration = 300,
+	    eyeColor = '#ffdc3d',
+	    irisColor = '#a6ceff';
+
+	var x = width / 2,
+	    y = height / 2,
+	    startTime = 0;
+
+	// eye
+	var part = new Part(width, height);
+	for (var i = 0, arc = null; i < 4; i++) {
+		startTime = startTime + duration / 4;
+		arc = new Arc([x, y], 135 - i * lineWidth * 2, -Math.PI / 2, -2 * Math.PI, eyeColor, lineWidth, startTime, duration);
+		arc.anticlockwise = true;
+		part.add(arc);
+	}
+
+	parts.push(part);
+	startTime = startTime + duration;
+
+	part = new Part(width, height);
+	for (var _i6 = 0, _arc4 = null; _i6 < 4; _i6++) {
+		startTime = startTime + duration / 2;
+		part.add(new CurveQuad([x - 99 - _i6 * lineWidth * 1.05, y - 50 + _i6 * 1.5 * lineWidth * 2.7], [x + 99 + _i6 * lineWidth * 1.05, y - 50 + _i6 * 1.5 * lineWidth * 2.7], [x, y - 120 + lineWidth * 0.5], eyeColor, lineWidth, startTime, duration / 4));
+	}
+	parts.push(part);
+	startTime = startTime + duration;
+
+	part = new Part(width, height);
+	for (var _i7 = 0, _arc5 = null; _i7 < 4; _i7++) {
+		startTime = startTime + duration / 2;
+		part.add(new CurveQuad([x + 99 + _i7 * lineWidth * 1.05, y + 50 - _i7 * 1.5 * lineWidth * 2.7], [x - 99 - _i7 * lineWidth * 1.05, y + 50 - _i7 * 1.5 * lineWidth * 2.7], [x, y + 120 - lineWidth * 0.5], eyeColor, lineWidth, startTime, duration / 4));
+	}
+	parts.push(part);
+	startTime = startTime + duration;
+
+	// iris
+	part = new Part(width, height);
+	for (var _i8 = 0, _arc6 = null; _i8 < 4; _i8++) {
+		startTime = startTime + duration / 4;
+		_arc6 = new Arc([x, y], 50 - _i8 * lineWidth * 2, -Math.PI / 2, 2 * Math.PI, irisColor, lineWidth, startTime, duration);
+		part.add(_arc6);
+	}
+
+	parts.push(part);
+
+	return parts;
+};
+
+animations.deadpool = function deadpool(canvas) {
+	var parts = [],
+	    width = canvas.width,
+	    height = canvas.height,
+	    lineWidth = 4,
+	    duration = 300,
+	    headColor = '#fa482a',
+	    eyesColor = '#fff';
+
+	var x = width / 2,
+	    y = height / 2,
+	    startTime = 0;
+
+	// head
+	var part = new Part(width, height);
+	for (var i = 0, arc = null; i < 4; i++) {
+		startTime = startTime + duration / 4;
+		arc = new Arc([x, y], 104 + i * lineWidth * 2, -Math.PI / 2, -2 * Math.PI, headColor, lineWidth, startTime, duration);
+		arc.anticlockwise = true;
+		part.add(arc);
+	}
+
+	parts.push(part);
+	startTime = startTime + duration / 4;
+
+	// nose
+	part = new Part(width, height);
+	for (var _i9 = 0, _arc7 = null; _i9 < 4; _i9++) {
+		startTime = startTime + duration / 4;
+		part.add(new Line([x - 12 + _i9 * lineWidth * 2, y - 104], [x - 12 + _i9 * lineWidth * 2, y + 104], headColor, lineWidth, startTime, duration));
+	}
+
+	parts.unshift(part);
+	startTime = startTime + duration / 4;
+
+	// eyes
+	part = new Part(width, height);
+	for (var _i10 = 0, _arc8 = null; _i10 < 4; _i10++) {
+		startTime = startTime + duration / 4;
+		part.add(new Line([x - 33, y - 10 + _i10 * lineWidth * 2.2], [x - 81, y - 25 + _i10 * lineWidth * 2.2], eyesColor, lineWidth, startTime, duration));
+
+		part.add(new Line([x + 33, y - 10 + _i10 * lineWidth * 2.2], [x + 81, y - 25 + _i10 * lineWidth * 2.2], eyesColor, lineWidth, startTime, duration));
+	}
+
+	parts.unshift(part);
+
+	return parts;
+};
+
+animations.fantastic = function fantastic(canvas) {
 	var parts = [],
 	    width = canvas.width,
 	    height = canvas.height,
@@ -596,7 +839,7 @@ function fantastic(canvas) {
 	    backColor = '#02557d',
 	    color = '#fff';
 
-	var part = new _common.Part(width, height),
+	var part = new Part(width, height),
 	    x = width / 2 + 20,
 	    y = height / 2 + lineLength / 2,
 	    endX = x,
@@ -605,42 +848,42 @@ function fantastic(canvas) {
 
 	for (var i = 0; i < 7; i++) {
 		startTime = startTime + duration / 7;
-		part.add(new _common.Line([x + i * lineWidth, y], [endX + i * lineWidth, endY], i % 2 === 0 ? color : backColor, lineWidth, startTime, duration));
+		part.add(new Line([x + i * lineWidth, y], [endX + i * lineWidth, endY], i % 2 === 0 ? color : backColor, lineWidth, startTime, duration));
 	}
 
 	parts.push(part);
 
-	part = new _common.Part(width, height);
+	part = new Part(width, height);
 	x = width / 2 + 20;
 	y = height / 2 - lineLength / 2;
 	endX = width / 2 - lineLength / 2;
 	endY = height / 2 + 20;
 	startTime += duration / 6;
-	for (var _i = 0; _i < 7; _i++) {
+	for (var _i11 = 0; _i11 < 7; _i11++) {
 		startTime = startTime + duration / 7;
-		part.add(new _common.Line([x, y + 1 + _i * lineWidth * 1.5], [endX + 1 + _i * lineWidth * 1.5, endY], _i % 2 === 0 ? color : backColor, lineWidth, startTime, duration));
+		part.add(new Line([x, y + 1 + _i11 * lineWidth * 1.5], [endX + 1 + _i11 * lineWidth * 1.5, endY], _i11 % 2 === 0 ? color : backColor, lineWidth, startTime, duration));
 	}
 
 	parts.unshift(part);
 
-	part = new _common.Part(width, height);
+	part = new Part(width, height);
 	x = width / 2 - lineLength / 2;
 	y = height / 2 + 20;
 	endX = width / 2 + lineLength / 2;
 	endY = height / 2 + 20;
 	startTime += duration / 6;
-	for (var _i2 = 0; _i2 < 7; _i2++) {
+	for (var _i12 = 0; _i12 < 7; _i12++) {
 		startTime = startTime + duration / 7;
-		part.add(new _common.Line([x, y + _i2 * lineWidth], [endX, endY + _i2 * lineWidth], _i2 % 2 === 0 ? color : backColor, lineWidth, startTime, duration));
+		part.add(new Line([x, y + _i12 * lineWidth], [endX, endY + _i12 * lineWidth], _i12 % 2 === 0 ? color : backColor, lineWidth, startTime, duration));
 	}
 
 	parts.push(part);
 
-	part = new _common.Part(width, height);
+	part = new Part(width, height);
 	startTime += duration / 6;
-	for (var _i3 = 0, arc = null; _i3 < 4; _i3++) {
+	for (var _i13 = 0, arc = null; _i13 < 4; _i13++) {
 		startTime = startTime + duration / 4;
-		arc = new _common.Arc([width / 2, height / 2], lineLength / 2 + lineLength / 5 + _i3 * lineWidth * 2, -(Math.PI / 2), -2 * Math.PI, color, lineWidth, startTime, duration);
+		arc = new Arc([width / 2, height / 2], lineLength / 2 + lineLength / 5 + _i13 * lineWidth * 2, -(Math.PI / 2), -2 * Math.PI, color, lineWidth, startTime, duration);
 		arc.anticlockwise = true;
 		part.add(arc);
 	}
@@ -648,6 +891,66 @@ function fantastic(canvas) {
 	parts.push(part);
 
 	return parts;
-}
+};
 
-},{"../common.js":1}]},{},[2]);
+animations.flash = function flash(canvas) {
+	var parts = [],
+	    width = canvas.width,
+	    height = canvas.height,
+	    lineWidth = 4,
+	    duration = 300,
+	    sColor = '#ffbd3d',
+	    circleColor = '#fff';
+
+	var x = width / 2,
+	    y = height / 2,
+	    startTime = 0;
+
+	// /
+	var part = new Part(width, height);
+	for (var i = 0, arc = null; i < 4; i++) {
+		startTime = startTime + duration / 4;
+		part.add(new Line([x + 75, y - 160 + i * lineWidth * 3], [x - 60, y - 30 + i * lineWidth * 3], sColor, lineWidth, startTime, duration));
+	}
+	part.add(new ClearRect(x + 73, y - 161, lineWidth, lineWidth * 12, startTime - duration));
+	part.add(new ClearRect(x - 59 - lineWidth, y - 30 - lineWidth, lineWidth, lineWidth * 12, startTime - duration));
+	parts.push(part);
+
+	// -
+	part = new Part(width, height);
+	for (var _i14 = 0, _arc9 = null; _i14 < 4; _i14++) {
+		startTime = startTime + duration / 4;
+		part.add(new Line([x - 35 - _i14 * lineWidth * 2, y - 19 + _i14 * lineWidth * 2], [x - 35 - _i14 * lineWidth * 2 + 97, y - 19 + _i14 * lineWidth * 2], sColor, lineWidth, startTime, duration));
+	}
+
+	// /
+	parts.push(part);
+	part = new Part(width, height);
+	for (var _i15 = 0, _arc10 = null; _i15 < 4; _i15++) {
+		startTime = startTime + duration / 4;
+		part.add(new Line([x + 65, y - 20 + _i15 * lineWidth * 3], [x - 80, y + 120 + _i15 * lineWidth * 3], sColor, lineWidth, startTime, duration));
+	}
+	part.add(new ClearRect(x + 62, y - 21, lineWidth, lineWidth * 12, startTime - duration));
+	part.add(new ClearRect(x - 79 - lineWidth, y + 120 - lineWidth, lineWidth, lineWidth * 12, startTime - duration));
+	parts.push(part);
+
+	startTime = startTime + duration / 4;
+	part = new Part(width, height);
+	for (var _i16 = 0, _arc11 = null; _i16 < 4; _i16++) {
+		startTime = startTime + duration / 4;
+		_arc11 = new Arc([x, y], 133 - _i16 * lineWidth * 2, -(Math.PI / 3 + Math.PI / 15), -2 * Math.PI, circleColor, lineWidth, startTime, duration);
+		_arc11.anticlockwise = true;
+		part.add(_arc11);
+	}
+
+	part.add(new ClearQuad(x + 75, y - 160 + lineWidth * 4, x - 5, y - 160 + lineWidth * 24, lineWidth * 12, startTime - duration));
+	part.add(new ClearQuad(x + 15, y + 30 + lineWidth * 4, x - 75, y + 35 + lineWidth * 24, lineWidth * 12, startTime - duration));
+
+	parts.push(part);
+
+	return parts;
+};
+
+launch(links[0]);
+
+},{}]},{},[1]);
